@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>上传图片</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0-beta/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/atom-one-light.min.css"
+        rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/cropperjs/dist/cropper.css" rel="stylesheet" />
+</head>
+
+<body>
+    <div id="app">
+        <h1 id="title" class="title">Upload images</h1>
+
+        <div v-show="$refs.upload && $refs.upload.dropActive" class="drop-active">
+            <h3>Drop files to upload</h3>
+        </div>
+        <div class="upload" v-show="!isOption">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Thumb</th>
+                            <th>Name</th>
+                            <th>Size</th>
+                            <th>Speed</th>
+                            <th>Status</th>
+                            <!--
+                            <th>Action</th>
+                            -->
+                            <th>Preview</th>
+                            <th>Link</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-if="!files.length">
+                            <td colspan="8">
+                                <div class="text-center p-5">
+                                    <h4>Drop files anywhere to upload<br />or</h4>
+                                    <label :for="name" class="btn btn-lg btn-primary">Select Files</label>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr v-for="(file, index) in files" :key="file.id">
+                            <td>{{index}}</td>
+                            <td>
+                                <img v-if="file.thumb" :src="file.thumb" width="40" height="auto" />
+                                <span v-else>No Image</span>
+                            </td>
+                            <td>
+                                <div class="filename">
+                                    {{file.name}}
+                                </div>
+                                <div class="progress" v-if="file.active || file.progress !== '0.00'">
+                                    <div :class="{'progress-bar': true, 'progress-bar-striped': true, 'bg-danger': file.error, 'progress-bar-animated': file.active}"
+                                        role="progressbar" :style="{width: file.progress + '%'}">{{file.progress}}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{file.size | formatSize}}</td>
+                            <td>{{file.speed | formatSize}}</td>
+
+                            <td v-if="file.error">{{file.error}}</td>
+                            <td v-else-if="file.success">success</td>
+                            <td v-else-if="file.active">active</td>
+                            <td v-else></td>
+                            <!--
+                            <td>
+                                <div class="btn-group">
+                                    <button class="btn btn-secondary btn-sm dropdown-toggle" type="button">
+                                        Action
+                                    </button>
+                                    <div class="dropdown-menu">
+                                        <a :class="{'dropdown-item': true, disabled: file.active || file.success || file.error === 'compressing'}"
+                                            href="#"
+                                            @click.prevent="file.active || file.success || file.error === 'compressing' ? false :  onEditFileShow(file)">Edit</a>
+                                        <a :class="{'dropdown-item': true, disabled: !file.active}" href="#"
+                                            @click.prevent="file.active ? $refs.upload.update(file, {error: 'cancel'}) : false">Cancel</a>
+
+                                        <a class="dropdown-item" href="#" v-if="file.active"
+                                            @click.prevent="$refs.upload.update(file, {active: false})">Abort</a>
+                                        <a class="dropdown-item" href="#"
+                                            v-else-if="file.error && file.error !== 'compressing' && $refs.upload.features.html5"
+                                            @click.prevent="$refs.upload.update(file, {active: true, error: '', progress: '0.00'})">Retry
+                                            upload</a>
+                                        <a :class="{'dropdown-item': true, disabled: file.success || file.error === 'compressing'}"
+                                            href="#" v-else
+                                            @click.prevent="file.success || file.error === 'compressing' ? false : $refs.upload.update(file, {active: true})">Upload</a>
+
+                                        <div class="dropdown-divider"></div>
+                                        <a class="dropdown-item" href="#"
+                                            @click.prevent="$refs.upload.remove(file)">Remove</a>
+                                    </div>
+                                </div>
+                            </td>
+                            -->
+                            <td><img :src="'https://img.njzjz.win/?w=40&url=https://drive.google.com/uc?id='+file.response.id"
+                                    width="40" height="auto" v-if="file.response.id">
+                            </td>
+                            <td>
+                                <div v-if="file.response.id">
+                                    Direct: <input :value="'https://drive.google.com/uc?id='+file.response.id">
+                                    <button type="button" class="btn"
+                                        v-clipboard:copy="'https://drive.google.com/uc?id='+file.response.id">Copy!</button>
+                                    <br />
+                                    CDN: <input
+                                        :value="'https://img.njzjz.win/?url=https://drive.google.com/uc?id='+file.response.id">
+                                    <button type="button" class="btn"
+                                        v-clipboard:copy="'https://img.njzjz.win/?url=https://drive.google.com/uc?id='+file.response.id">Copy!</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+
+            <div class="footer">
+                <div class="btn-group">
+                    <file-upload class="btn btn-primary dropdown-toggle" :post-action="postAction"
+                        :put-action="putAction" :extensions="extensions" :accept="accept" :multiple="multiple"
+                        :directory="directory" :size="size || 0" :thread="thread < 1 ? 1 : (thread > 5 ? 5 : thread)"
+                        :headers="headers" :data="data" :drop="drop" :drop-directory="dropDirectory"
+                        :add-index="addIndex" v-model="files" @input-filter="inputFilter" @input-file="inputFile"
+                        ref="upload">
+                        <i class="fa fa-plus"></i>
+                        Select
+                    </file-upload>
+                    <div class="dropdown-menu">
+                        <label class="dropdown-item" :for="name">Add files</label>
+                        <a class="dropdown-item" href="#" @click="onAddFolader">Add folder</a>
+                        <a class="dropdown-item" href="#" @click.prevent="addData.show = true">Add data</a>
+                    </div>
+                </div>
+                <!--
+                <button type="button" class="btn btn-success" v-if="!$refs.upload || !$refs.upload.active"
+                    @click.prevent="$refs.upload.active = true">
+                    <i class="fa fa-arrow-up" aria-hidden="true"></i>
+                    Start Upload
+                </button>
+                <button type="button" class="btn btn-danger" v-else @click.prevent="$refs.upload.active = false">
+                    <i class="fa fa-stop" aria-hidden="true"></i>
+                    Stop Upload
+                </button>
+                -->
+            </div>
+        </div>
+        <script src="https://cdn.jsdelivr.net/npm/vue@2.6.12/dist/vue.min.js"></script>
+        <script
+            src="https://cdn.jsdelivr.net/npm/vue-upload-component@2.8.20/dist/vue-upload-component.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vue-clipboard2@0.3.1/dist/vue-clipboard.min.js"></script>
+        <script src="imageupload.js"></script>
+</body>
+
+</html>
