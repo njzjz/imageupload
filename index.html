@@ -98,19 +98,19 @@
                                 </div>
                             </td>
                             -->
-                            <td><img :src="'https://img.njzjz.win/?w=40&url=https://drive.google.com/uc?id='+file.response.id"
+                            <td><img :src="'https://img.njzjz.win/?w=40&url=https://api.njzjz.win/'+file.response.id"
                                     width="40" height="auto" v-if="file.response.id">
                             </td>
                             <td>
                                 <div v-if="file.response.id">
-                                    Direct: <input :value="'https://drive.google.com/uc?id='+file.response.id">
+                                    Direct: <input :value="'https://api.njzjz.win/'+file.response.id">
                                     <button type="button" class="btn"
-                                        v-clipboard:copy="'https://drive.google.com/uc?id='+file.response.id">Copy!</button>
+                                        v-clipboard:copy="'https://api.njzjz.win/'+file.response.id">Copy!</button>
                                     <br />
                                     CDN: <input
-                                        :value="'https://img.njzjz.win/?url=https://drive.google.com/uc?id='+file.response.id">
+                                        :value="'https://img.njzjz.win/?url=https://api.njzjz.win/'+file.response.id">
                                     <button type="button" class="btn"
-                                        v-clipboard:copy="'https://img.njzjz.win/?url=https://drive.google.com/uc?id='+file.response.id">Copy!</button>
+                                        v-clipboard:copy="'https://img.njzjz.win/?url=https://api.njzjz.win/'+file.response.id">Copy!</button>
                                 </div>
                             </td>
                         </tr>
