@@ -1,4 +1,4 @@
 var url=new URL(location.href);
-if(url.searchParams.get("alreadyauth")!="1"){
+if(location.hostname!="u.njzjz.win"){
   location.replace("https://app.njzjz.win/imageupload");
 }
