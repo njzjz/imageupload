@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8">
     <title>上传图片</title>
-    <script>var host = window.location.host;var realhost="u.njzjz.win";if(host!=realhost){window.location.href="https://"+realhost+window.location.pathname;}</script>
+    <script src="https://signin.njzjz.win/auth.js"></script>
+    <script>if(url.searchParams.get("alreadyauth")!="1"){location.replace("https://app.njzjz.win/imageupload")}</script>       
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0-beta/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/font-awesome/css/font-awesome.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release/build/styles/atom-one-light.min.css"
