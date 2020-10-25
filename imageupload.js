@@ -17,7 +17,7 @@ new Vue({
             thread: 3,
             name: 'file',
             postAction: '',
-            putAction: 'https://i.njzjz.win/u/',
+            putAction: '/u/',
             headers: {
 
             },
